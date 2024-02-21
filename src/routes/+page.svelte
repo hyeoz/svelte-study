@@ -1,13 +1,41 @@
 <script>
+	import {createTodoStore} from './todo'
+	import TodoList from '../component/TodoList.svelte'
+	import { tick } from 'svelte';
+
+	let todos = createTodoStore([
+		{
+		description: 'test',
+		done: false}
+	])
+	let inputValue = ''
 </script>
 
 <svelte:head>
-	<title>Home</title>
+	<title>TODO</title>
 	<meta name="description" content="Svelte demo app" />
 </svelte:head>
 
 <section>
-	<h1>RESET SVELTE</h1>
+	<input bind:value={inputValue} on:keypress|stopPropagation={(e) => {
+		if (e.key === 'Enter') {
+			todos.add(inputValue)
+			// console.log(inputValue)
+			inputValue = ''
+		}
+	}}
+	placeholder="add something to do" />
+
+	<div class="todos-wrapper">
+		<div>
+			<h1>todo</h1>
+			<TodoList store={todos} todos={$todos} done={false} />
+		</div>
+		<div>
+			<h1>done</h1>
+			<TodoList store={todos} todos={$todos} done={true} />
+		</div>
+	</div>
 </section>
 
 <style>
@@ -22,20 +50,21 @@
 	h1 {
 		width: 100%;
 	}
+	input {
+		width: 300px;
+		border-radius: 4px;
+		padding: 8px;
 
-	.welcome {
-		display: block;
-		position: relative;
-		width: 100%;
-		height: 0;
-		padding: 0 0 calc(100% * 495 / 2048) 0;
+	}
+	input:focus-visible {
+		outline: none;
 	}
 
-	.welcome img {
-		position: absolute;
+	.todos-wrapper {
+		max-width: 550px;
 		width: 100%;
-		height: 100%;
-		top: 0;
-		display: block;
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 16px;
 	}
 </style>
