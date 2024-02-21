@@ -1,14 +1,19 @@
 <script lang="ts">
 	import type { TodoType } from "../routes/todo";
+    import {fly} from 'svelte/transition'
+    import {flip} from 'svelte/animate'
 
     export let store: any;
     export let done: boolean;
     export let todos: TodoType[];
 </script>
 
+{#if ![...todos].filter((t) => !t.done).length && !done}
+<p style="text-align: center;">Everything is Done!</p>
+{:else}
 <ul>
     {#each todos.filter((todo) => todo.done === done) as todo (todo.id)}
-    <li class:done>
+    <li class:done transition:fly animate:flip>
         <div>
             <input type="checkbox" checked={todo.done}
             on:change={(e) => store.mark(todo, e.currentTarget.checked)} />
@@ -20,17 +25,22 @@
     </li>
     {/each}
 </ul>
+{/if}
 
 <style>
+    ul {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
     li {
         list-style: none;
         display: flex;
         justify-content: space-between;
         align-items: center;
         padding: 16px;
-        /* border: 1px solid grey; */
+        border: 1px solid grey;
         border-radius: 8px;
-        box-shadow: 0px 0px 10px #eaeaea;
     }
     li > div {
         display: flex;
@@ -42,6 +52,8 @@
         color: #707070;
         background-color: #f3f6f4;
         pointer-events: none;
+        border: 0;
+        box-shadow: 0px 0px 10px #eaeaea;
     }
     li.done button {
         color: #707070;

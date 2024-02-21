@@ -1,6 +1,7 @@
 <script>
 	import {createTodoStore} from './todo'
 	import TodoList from '../component/TodoList.svelte'
+	import { tick } from 'svelte';
 
 	let todos = createTodoStore([
 		{
@@ -16,9 +17,10 @@
 </svelte:head>
 
 <section>
-	<input bind:value={inputValue} on:keydown={(e) => {
+	<input bind:value={inputValue} on:keypress|stopPropagation={(e) => {
 		if (e.key === 'Enter') {
 			todos.add(inputValue)
+			// console.log(inputValue)
 			inputValue = ''
 		}
 	}}
