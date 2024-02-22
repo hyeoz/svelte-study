@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { TodoType } from "../routes/todo";
-    import {fly} from 'svelte/transition'
+    import {fly, fade} from 'svelte/transition'
     import {flip} from 'svelte/animate'
 
     export let store: any;
@@ -13,7 +13,7 @@
 {:else}
 <ul>
     {#each todos.filter((todo) => todo.done === done) as todo (todo.id)}
-    <li class:done transition:fly animate:flip>
+    <li class:done in:fly out:fade animate:flip>
         <div>
             <input type="checkbox" checked={todo.done}
             on:change={(e) => store.mark(todo, e.currentTarget.checked)} />
@@ -47,11 +47,12 @@
         align-items: center;
         gap: 4px;
         font-size: 16px;
+        gap: 8px;
     }
     li.done {
         color: #707070;
         background-color: #f3f6f4;
-        pointer-events: none;
+        /* pointer-events: none; */
         border: 0;
         box-shadow: 0px 0px 10px #eaeaea;
     }

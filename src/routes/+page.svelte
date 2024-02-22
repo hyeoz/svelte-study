@@ -1,7 +1,6 @@
-<script>
+<script lang="ts">
 	import {createTodoStore} from './todo'
 	import TodoList from '../component/TodoList.svelte'
-	import { tick } from 'svelte';
 
 	let todos = createTodoStore([
 		{
@@ -20,7 +19,6 @@
 	<input bind:value={inputValue} on:keypress|stopPropagation={(e) => {
 		if (e.key === 'Enter') {
 			todos.add(inputValue)
-			// console.log(inputValue)
 			inputValue = ''
 		}
 	}}
@@ -40,28 +38,34 @@
 
 <style>
 	section {
+		height: 100%;
 		display: flex;
 		flex-direction: column;
 		justify-content: center;
 		align-items: center;
-		flex: 0.6;
+		flex: 1;
+		padding-top: 40px;
 	}
-
+	div {
+		width: 100%;
+	}
 	h1 {
 		width: 100%;
 	}
 	input {
 		width: 300px;
 		border-radius: 4px;
-		padding: 8px;
-
+		padding: 16px;
+		font-size: 18px;
+		font-weight: 600;
 	}
 	input:focus-visible {
 		outline: none;
 	}
 
 	.todos-wrapper {
-		max-width: 550px;
+		flex-grow: 1;
+		max-width: 800px;
 		width: 100%;
 		display: grid;
 		grid-template-columns: 1fr 1fr;
