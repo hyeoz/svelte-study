@@ -1,6 +1,5 @@
 <script lang="ts">
-	import { json } from '@sveltejs/kit';
-	import { beforeUpdate, onMount, tick } from 'svelte';
+	import { onMount, tick } from 'svelte';
 
     let weather: {
         description: string;
@@ -18,31 +17,28 @@
         temp_max: number;
         temp_min: number;
     }
+
     let lat: number;
     let lon: number;
 
 	onMount(() => {
-        navigator.geolocation.getCurrentPosition(async (position) => {
+        // weather = res.body
+        navigator.geolocation.getCurrentPosition((position) => {
             lat = position.coords.latitude;
             lon = position.coords.longitude;
-
-            // getWeatherData(lat, lon)
-
-        })
-        // weather = res.body
-	})
-    beforeUpdate(() => {
-        if (lat && lon) {
-            console.log(lat, lon)
+    
             getWeatherData()
-        }
-    })
+    
+        })
+	})
     async function getWeatherData() {
         await tick();
         const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${import.meta.env.VITE_WEATHER_API_KEY}`);
         const data = await res.json();
+
         weather = data.weather[0]
         main = data.main
+
         return {
             weather,
             main
@@ -51,19 +47,40 @@
 </script>
 
 <section>
-    {#await getWeatherData()}
-    <p>... wating</p>
-    {:then data}
-    <div>
-        <img src={`https://openweathermap.org/img/wn/${data.weather?.icon}@2x.png`} alt="weather-icon" />
+    {#if !!weather?.icon}
+    <div class="weather-wrapper">
+        <!-- <p>{Math.round(main.temp - 273)}°C</p> -->
+        <div>
+        <p>오늘의 날씨는</p>
+        <img src={`https://openweathermap.org/img/wn/${weather?.icon}@2x.png`} alt="weather-icon" />
     </div>
-    {/await}
+    </div>
+    {:else}
+    <h1>... waiting</h1>
+    {/if}
 </section>
 
 <style>
     section {
         background-color: bisque;
         padding: 16px 0;
+        height: 140px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+    .weather-wrapper {
+        padding: 0 24px;
+    }
+    .weather-wrapper>div {
+        display: flex;
+        gap: 16px;
+        align-items: center;
+
+    }
+    p {
+        font-size: 18px;
 
     }
     h1 {

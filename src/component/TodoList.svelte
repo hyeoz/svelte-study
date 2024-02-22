@@ -12,7 +12,7 @@
 <p style="text-align: center;">Everything is Done!</p>
 {:else}
 <ul>
-    {#each todos.filter((todo) => todo.done === done) as todo (todo.id)}
+    {#each todos.filter((todo) => todo.done === done).sort((a,b) => a.id - b.id) as todo (todo.id)}
     <li class:done in:fly out:fade animate:flip>
         <div>
             <input type="checkbox" checked={todo.done}
@@ -52,7 +52,6 @@
     li.done {
         color: #707070;
         background-color: #f3f6f4;
-        /* pointer-events: none; */
         border: 0;
         box-shadow: 0px 0px 10px #eaeaea;
     }
