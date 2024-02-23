@@ -1,12 +1,13 @@
-<script>
+<script lang="ts">
 	import {createTodoStore} from './todo'
 	import TodoList from '../component/TodoList.svelte'
-	import { tick } from 'svelte';
+	import {weatherState} from './weather'
 
 	let todos = createTodoStore([
 		{
-		description: 'test',
-		done: false}
+			description: 'test',
+			done: false
+		}
 	])
 	let inputValue = ''
 </script>
@@ -18,9 +19,9 @@
 
 <section>
 	<input bind:value={inputValue} on:keypress|stopPropagation={(e) => {
+		if (!inputValue) return;
 		if (e.key === 'Enter') {
 			todos.add(inputValue)
-			// console.log(inputValue)
 			inputValue = ''
 		}
 	}}
@@ -40,31 +41,62 @@
 
 <style>
 	section {
+		height: 100%;
 		display: flex;
 		flex-direction: column;
 		justify-content: center;
 		align-items: center;
-		flex: 0.6;
+		flex: 1;
+		padding-top: 40px;
 	}
-
+	div {
+		width: 100%;
+	}
 	h1 {
 		width: 100%;
 	}
 	input {
 		width: 300px;
 		border-radius: 4px;
-		padding: 8px;
-
+		padding: 16px;
+		font-size: 18px;
+		font-weight: 600;
 	}
 	input:focus-visible {
 		outline: none;
 	}
 
 	.todos-wrapper {
-		max-width: 550px;
+		flex-grow: 1;
+		max-width: 800px;
 		width: 100%;
 		display: grid;
 		grid-template-columns: 1fr 1fr;
 		gap: 16px;
 	}
+
+
+    .falling-wrapper {
+        /* position: relative; */
+        width: 100vw;
+        height: 100vh;
+    }
+    .falling-icon {
+        position: absolute;
+        top: var(--top);
+        left: var(--left);
+        width: var(--width);
+        height: var(--width);
+        animation: fall 3s linear infinite;
+        animation-delay: var(--delay);
+    }
+
+@keyframes fall {
+    0% {
+        transform: translateY(-100vh);
+    }
+    100% {
+        transform: translateY(100vh);
+    }
+}
 </style>
