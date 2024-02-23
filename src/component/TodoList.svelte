@@ -6,25 +6,60 @@
     export let store: any;
     export let done: boolean;
     export let todos: TodoType[];
+
+    let _order: number[];
+    let _todos: TodoType[];
+
+    let floatId: number;
+    let overId: number;
+
+    $: {
+        // 스코프 안에 있어야 변화 감지
+        _todos = todos.filter((todo) => todo.done === done)
+        _order = [...todos.map((t) => t.id)]
+    }
+    
+    const onDragStart = (id: number) => {
+        floatId = id
+    }
+    const onDragOver = (event: any) => {
+        overId = +event.toElement.id
+    }
+    const onDragEnd = () => {
+        const overIndex = _order.findIndex((o) => o === overId);
+        const scoped = [..._order].filter((f) => f !== floatId);
+        let slicedOrder = [...scoped.slice(0, overIndex), floatId ,...scoped.slice(overIndex)];
+        _order = [...slicedOrder]
+    }
 </script>
 
-{#if ![...todos].filter((t) => !t.done).length && !done}
-<p style="text-align: center;">Everything is Done!</p>
+{#if !_todos.filter((t) => !t.done).length && !done}
+    <p style="text-align: center;">Everything is Done!</p>
 {:else}
-<ul>
-    {#each todos.filter((todo) => todo.done === done).sort((a,b) => a.id - b.id) as todo (todo.id)}
-    <li class:done in:fly out:fade animate:flip>
-        <div>
-            <input type="checkbox" checked={todo.done}
-            on:change={(e) => store.mark(todo, e.currentTarget.checked)} />
-            
-            <p style="margin: 0;">{todo.description}</p>
-        </div>
+    <ul>
+        {#each _todos.sort((a,b) => _order.findIndex(i => i === a.id) - _order.findIndex(i => i ===b.id)) as todo (todo.id)}
+        <li 
+            class:done 
+            in:fly 
+            out:fade 
+            animate:flip
+            id={todo.id+''}
+            on:dragstart={() => onDragStart(todo.id)} 
+            on:dragover={onDragOver}
+            on:dragend={onDragEnd} 
+            draggable={true}
+        >
+            <div>
+                <input type="checkbox" checked={todo.done}
+                on:change={(e) => store.mark(todo, e.currentTarget.checked)} />
+                
+                <p style="margin: 0;">{todo.description}</p>
+            </div>
 
-        <button on:click={(e) => store.remove(todo)}>X</button>
-    </li>
-    {/each}
-</ul>
+            <button on:click={(e) => store.remove(todo)}>X</button>
+        </li>
+        {/each}
+    </ul>
 {/if}
 
 <style>

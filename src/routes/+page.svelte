@@ -1,11 +1,13 @@
 <script lang="ts">
 	import {createTodoStore} from './todo'
 	import TodoList from '../component/TodoList.svelte'
+	import {weatherState} from './weather'
 
 	let todos = createTodoStore([
 		{
-		description: 'test',
-		done: false}
+			description: 'test',
+			done: false
+		}
 	])
 	let inputValue = ''
 </script>
@@ -17,6 +19,7 @@
 
 <section>
 	<input bind:value={inputValue} on:keypress|stopPropagation={(e) => {
+		if (!inputValue) return;
 		if (e.key === 'Enter') {
 			todos.add(inputValue)
 			inputValue = ''
@@ -71,4 +74,29 @@
 		grid-template-columns: 1fr 1fr;
 		gap: 16px;
 	}
+
+
+    .falling-wrapper {
+        /* position: relative; */
+        width: 100vw;
+        height: 100vh;
+    }
+    .falling-icon {
+        position: absolute;
+        top: var(--top);
+        left: var(--left);
+        width: var(--width);
+        height: var(--width);
+        animation: fall 3s linear infinite;
+        animation-delay: var(--delay);
+    }
+
+@keyframes fall {
+    0% {
+        transform: translateY(-100vh);
+    }
+    100% {
+        transform: translateY(100vh);
+    }
+}
 </style>
