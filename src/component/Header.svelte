@@ -1,25 +1,17 @@
 <script lang="ts">
-	import { onMount, tick } from 'svelte';
+	import { onDestroy, onMount, tick } from 'svelte';
+	import type { WeatherMainType, WeatherType } from '../routes/weather';
+    import {weatherState} from '../routes/weather'
 
-    let weather: {
-        description: string;
-        icon: string;
-        id: number;
-        main: string;
-    };
-    let main: {
-        feels_like: number;
-        grnd_level: number;
-        humidity: number;
-        pressure: number;
-        sea_level: number;
-        temp: number;
-        temp_max: number;
-        temp_min: number;
-    }
+    let weather: WeatherType;
+    let main: WeatherMainType
 
     let lat: number;
     let lon: number;
+
+    let weatherToggle = false
+
+    let timer: number;
 
 	onMount(() => {
         // weather = res.body
@@ -28,36 +20,48 @@
             lon = position.coords.longitude;
     
             getWeatherData()
-    
         })
+
+        timer = setInterval(() => {
+            weatherToggle = !weatherToggle
+        }, 3000)
 	})
+    onDestroy(() => {
+        clearInterval(timer)
+    })
     async function getWeatherData() {
-        await tick();
+        // await tick();
         const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${import.meta.env.VITE_WEATHER_API_KEY}`);
         const data = await res.json();
 
         weather = data.weather[0]
         main = data.main
+        weatherState.update(() => weather)
 
         return {
             weather,
             main
         }
     }
+
 </script>
 
 <section>
     {#if !!weather?.icon}
     <div class="weather-wrapper">
-        <!-- <p>{Math.round(main.temp - 273)}°C</p> -->
         <div>
-        <p>오늘의 날씨는</p>
-        <img src={`https://openweathermap.org/img/wn/${weather?.icon}@2x.png`} alt="weather-icon" />
-    </div>
+            <p>오늘의 날씨는</p>
+            {#if weatherToggle}
+                <img src={`https://openweathermap.org/img/wn/${weather?.icon}@2x.png`} alt="weather-icon" />
+            {:else}
+                <p>{Math.round(main.temp - 273)}°C</p>
+            {/if}
+        </div>
     </div>
     {:else}
     <h1>... waiting</h1>
     {/if}
+
 </section>
 
 <style>
@@ -70,6 +74,7 @@
         justify-content: center;
         align-items: center;
     }
+    
     .weather-wrapper {
         padding: 0 24px;
     }
@@ -77,8 +82,10 @@
         display: flex;
         gap: 16px;
         align-items: center;
-
+        width: 300px;
+        justify-content: space-between;
     }
+
     p {
         font-size: 18px;
 
@@ -86,4 +93,5 @@
     h1 {
         margin: 0;
     }
+
 </style>
