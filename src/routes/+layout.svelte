@@ -13,7 +13,8 @@
 	</main>
 
 	<footer>
-		<p>visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to learn SvelteKit</p>
+		<p style="margin-bottom: 0;">visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to learn SvelteKit</p>
+		<p style="margin-top: 0;">visit <a href="/info">info</a> to learn routing</p>
 	</footer>
 </div>
 
