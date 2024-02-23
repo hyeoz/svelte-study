@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { onDestroy, onMount, tick } from 'svelte';
 	import type { WeatherMainType, WeatherType } from '../routes/weather';
-    import {weatherState} from '../routes/weather'
+    import { weatherState } from '../routes/weather'
 
     let weather: WeatherType;
     let main: WeatherMainType
 
-    let lat: number;
-    let lon: number;
+    let lat: number = 37.5117;
+    let lon: number = 127.0478;
 
     let weatherToggle = false
 
@@ -15,12 +15,12 @@
 
 	onMount(() => {
         // weather = res.body
-        navigator.geolocation.getCurrentPosition((position) => {
-            lat = position.coords.latitude;
-            lon = position.coords.longitude;
+        // navigator.geolocation.getCurrentPosition((position) => {
+        //     lat = position.coords.latitude;
+        //     lon = position.coords.longitude;
     
-            getWeatherData()
-        })
+        //     getWeatherData()
+        // })
 
         timer = setInterval(() => {
             weatherToggle = !weatherToggle
@@ -47,7 +47,8 @@
 </script>
 
 <section>
-    {#if !!weather?.icon}
+    <!-- NOTE gerlocation 이용하는 방법 -->
+    <!-- {#if !!weather?.icon}
     <div class="weather-wrapper">
         <div>
             <p>오늘의 날씨는</p>
@@ -60,7 +61,19 @@
     </div>
     {:else}
     <h1>... waiting</h1>
-    {/if}
+    {/if} -->
+    {#await getWeatherData()}
+        <h1>... waiting</h1>
+    {:then {main, weather}}
+        <div class="weather-wrapper">
+            <p>오늘의 날씨는</p>
+            {#if weatherToggle}
+                <img src={`https://openweathermap.org/img/wn/${weather?.icon}@2x.png`} alt="weather-icon" />
+            {:else}
+                <p>{Math.round(main.temp - 273)}°C</p>
+            {/if}
+        </div>
+    {/await}
 
 </section>
 
@@ -77,15 +90,12 @@
     
     .weather-wrapper {
         padding: 0 24px;
-    }
-    .weather-wrapper>div {
         display: flex;
         gap: 16px;
         align-items: center;
         width: 300px;
         justify-content: space-between;
     }
-
     p {
         font-size: 18px;
 
